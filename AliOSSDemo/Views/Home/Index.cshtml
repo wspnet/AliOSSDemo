@@ -1,0 +1,92 @@
+﻿@model AliOSSDemo.Models.RegistrationModel
+@{
+    ViewBag.Title = "Index";
+}
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<h2>File upload with model validation</h2>
+<h3 style="color: green">@ViewBag.Message</h3>
+
+@using (Html.BeginForm("FileUpload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <fieldset>
+        <legend></legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.Name)
+                @Html.TextBoxFor(m => m.Name, new { maxlength = 50 })
+                @Html.ValidationMessageFor(m => m.Name)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Address)
+                @Html.TextAreaFor(m => m.Address, new { maxlength = 200 })
+                @Html.ValidationMessageFor(m => m.Address)
+            </li>
+            <li class="lifile">
+                @Html.TextBoxFor(m => m.file, new { type = "file" })
+                @Html.ValidationMessageFor(m => m.file)
+            </li>
+        </ol>
+        <input type="submit" value="Submit" />
+    </fieldset>
+}
+<img src="http://guanaihui.cn/product.jpg@100-0ci" alt="Alternate Text" />
+<script type="text/jscript">
+    //get file size
+    function GetFileSize(fileid) {
+        try {
+            var fileSize = 0;
+            fileSize = $("#" + fileid)[0].files[0].size //size in kb
+            fileSize = fileSize / 1048576; //size in mb
+            return fileSize;
+        }
+        catch (e) {
+            alert("Error is :" + e);
+        }
+    }
+
+    //get file path from client system
+    function getNameFromPath(strFilepath) {
+        var objRE = new RegExp(/([^\/\\]+)$/);
+        var strName = objRE.exec(strFilepath);
+
+        if (strName == null) {
+            return null;
+        }
+        else {
+            return strName[0];
+        }
+    }
+
+    $(function (b) {
+        $("#file").change(function () {
+            var file = getNameFromPath($(this).val());
+            if (file != null) {
+                var extension = file.substr((file.lastIndexOf('.') + 1));
+                switch (extension) {
+                    case 'jpg':
+                    case 'png':
+                    case 'gif':
+                    case 'pdf':
+                        flag = true;
+                        break;
+                    default:
+                        flag = false;
+                }
+            }
+            if (flag == false) {
+                $(".lifile > span").text("You can upload only jpg,png,gif,pdf extension file");
+                return false;
+            }
+            else {
+                var size = GetFileSize('file');
+                if (size > 3) {
+                    $(".lifile > span").text("You can upload file up to 3 MB");
+                }
+                else {
+                    $(".lifile > span").text("");
+                }
+            }
+        });
+    });
+</script>
